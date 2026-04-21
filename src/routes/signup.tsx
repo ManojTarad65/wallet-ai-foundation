@@ -51,7 +51,10 @@ function SignupPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4" style={{ background: "var(--gradient-dark)" }}>
+    <div
+      className="flex min-h-screen items-center justify-center px-4"
+      style={{ background: "var(--gradient-dark)" }}
+    >
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <Link to="/" className="inline-flex items-center gap-2 mb-6">
@@ -64,9 +67,7 @@ function SignupPage() {
 
         <form onSubmit={handleSubmit} className="glass-card space-y-4 rounded-xl p-6">
           {error && (
-            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
-              {error}
-            </div>
+            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
           )}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>

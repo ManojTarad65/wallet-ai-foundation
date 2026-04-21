@@ -33,10 +33,15 @@ function DashboardPage() {
           <div key={stat.label} className="glass-card rounded-xl p-5">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">{stat.label}</span>
-              <stat.icon className={`h-4 w-4 ${
-                stat.trend === "up" ? "text-success" :
-                stat.trend === "down" ? "text-destructive" : "text-muted-foreground"
-              }`} />
+              <stat.icon
+                className={`h-4 w-4 ${
+                  stat.trend === "up"
+                    ? "text-success"
+                    : stat.trend === "down"
+                      ? "text-destructive"
+                      : "text-muted-foreground"
+                }`}
+              />
             </div>
             <p className="mt-2 text-2xl font-bold text-foreground">{stat.value}</p>
           </div>
@@ -44,7 +49,9 @@ function DashboardPage() {
       </div>
 
       <div className="glass-card rounded-xl p-8 text-center">
-        <p className="text-muted-foreground">AI insights and charts will appear here once you add transactions.</p>
+        <p className="text-muted-foreground">
+          AI insights and charts will appear here once you add transactions.
+        </p>
       </div>
     </div>
   );

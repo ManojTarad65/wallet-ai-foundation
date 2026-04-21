@@ -75,13 +75,9 @@ export function UserMenu() {
         >
           <Avatar className="h-9 w-9 border border-primary/40 shadow-[0_0_12px_rgba(99,102,241,0.35)]">
             {avatarUrl ? <AvatarImage src={avatarUrl} alt={displayName} /> : null}
-            <AvatarFallback className="bg-primary/10 text-primary">
-              {initial}
-            </AvatarFallback>
+            <AvatarFallback className="bg-primary/10 text-primary">{initial}</AvatarFallback>
           </Avatar>
-          <span className="hidden text-sm font-medium text-foreground md:block">
-            {displayName}
-          </span>
+          <span className="hidden text-sm font-medium text-foreground md:block">{displayName}</span>
           <ChevronDown className="h-4 w-4 text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>

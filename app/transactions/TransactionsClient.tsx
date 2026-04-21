@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { ArrowLeftRight, Download, Plus, Trash2 } from "lucide-react";
+import { useMemo, useState, useEffect } from "react";
+import { ArrowLeftRight, Download, Plus, Trash2, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useCurrency } from "@/components/CurrencyProvider";
 import { useTransactions } from "@/hooks/useTransactions";
 import type { CreateTransactionInput } from "@/lib/transactions/schema";
 import {
@@ -40,6 +41,39 @@ export function TransactionsClient() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<CreateTransactionInput>(defaultForm);
   const [formError, setFormError] = useState<string | null>(null);
+  const [isCategorizing, setIsCategorizing] = useState(false);
+  const { formatAmount } = useCurrency();
+
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (
+        form.description &&
+        form.description.length > 2 &&
+        form.type === "expense" &&
+        !form.category.trim()
+      ) {
+        setIsCategorizing(true);
+        try {
+          const res = await fetch("/api/ai-categorize", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ description: form.description }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.category) {
+              setForm((prev) => ({ ...prev, category: data.category }));
+            }
+          }
+        } catch (err) {
+          console.error("Auto-categorization failed", err);
+        } finally {
+          setIsCategorizing(false);
+        }
+      }
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [form.description, form.type, form.category]);
 
   const hasTransactions = data.length > 0;
 
@@ -90,7 +124,7 @@ export function TransactionsClient() {
     const header = ["date", "description", "category", "type", "amount"].join(",");
     const rows = data
       .map((item) =>
-        [item.date, item.description ?? "", item.category, item.type, item.amount.toFixed(2)]
+        [item.date, item.description ?? "", item.category, item.type, item.amount]
           .map((value) => `"${String(value).replaceAll('"', '""')}"`)
           .join(","),
       )
@@ -139,19 +173,19 @@ export function TransactionsClient() {
           <div>
             <p className="text-xs uppercase tracking-wider text-muted-foreground">Income</p>
             <p className="mt-2 text-xl font-semibold text-success">
-              ${totalByType.income.toFixed(2)}
+              {formatAmount(totalByType.income)}
             </p>
           </div>
           <div>
             <p className="text-xs uppercase tracking-wider text-muted-foreground">Expenses</p>
             <p className="mt-2 text-xl font-semibold text-destructive">
-              ${totalByType.expense.toFixed(2)}
+              {formatAmount(totalByType.expense)}
             </p>
           </div>
           <div>
             <p className="text-xs uppercase tracking-wider text-muted-foreground">Net</p>
             <p className="mt-2 text-xl font-semibold text-foreground">
-              ${(totalByType.income - totalByType.expense).toFixed(2)}
+              {formatAmount(totalByType.income - totalByType.expense)}
             </p>
           </div>
         </div>
@@ -188,7 +222,7 @@ export function TransactionsClient() {
                   {item.type}
                 </span>
                 <span className="text-right font-medium text-foreground">
-                  ${item.amount.toFixed(2)}
+                  {formatAmount(item.amount)}
                 </span>
                 <div className="flex justify-end">
                   <AlertDialog>
@@ -273,7 +307,15 @@ export function TransactionsClient() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
+              <Label htmlFor="category" className="flex items-center gap-2">
+                Category
+                {isCategorizing && (
+                  <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+                )}
+                {!isCategorizing && form.description && form.category && (
+                  <Sparkles className="h-3 w-3 text-primary" />
+                )}
+              </Label>
               <Input
                 id="category"
                 placeholder="e.g., Groceries"

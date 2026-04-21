@@ -6,7 +6,11 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Wallet AI — Smart Finance Management" },
-      { name: "description", content: "AI-powered personal finance management. Track expenses, analyze spending patterns, and get smart insights." },
+      {
+        name: "description",
+        content:
+          "AI-powered personal finance management. Track expenses, analyze spending patterns, and get smart insights.",
+      },
       { property: "og:title", content: "Wallet AI — Smart Finance Management" },
       { property: "og:description", content: "AI-powered personal finance management." },
     ],
@@ -43,7 +47,9 @@ function LandingPage() {
         </div>
         <div className="flex items-center gap-3">
           <Link to="/login">
-            <Button variant="ghost" size="sm">Sign In</Button>
+            <Button variant="ghost" size="sm">
+              Sign In
+            </Button>
           </Link>
           <Link to="/signup">
             <Button size="sm">Get Started</Button>
@@ -59,13 +65,12 @@ function LandingPage() {
             AI-Powered Finance
           </div>
           <h1 className="text-4xl font-bold leading-tight tracking-tight md:text-6xl">
-            Your Money,{" "}
-            <span className="text-gradient">Smarter</span>
+            Your Money, <span className="text-gradient">Smarter</span>
           </h1>
         </div>
         <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground animate-fade-in-delay">
-          Track expenses, analyze spending patterns, and get AI-driven insights —
-          all in one beautifully designed dashboard.
+          Track expenses, analyze spending patterns, and get AI-driven insights — all in one
+          beautifully designed dashboard.
         </p>
         <div className="mt-10 flex items-center justify-center gap-4 animate-fade-in-delay-2">
           <Link to="/signup">
@@ -88,7 +93,11 @@ function LandingPage() {
             <div
               key={feature.title}
               className="glass-card rounded-xl p-6 animate-fade-in"
-              style={{ animationDelay: `${0.2 + i * 0.15}s`, opacity: 0, animationFillMode: "forwards" }}
+              style={{
+                animationDelay: `${0.2 + i * 0.15}s`,
+                opacity: 0,
+                animationFillMode: "forwards",
+              }}
             >
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                 <feature.icon className="h-5 w-5 text-primary" />

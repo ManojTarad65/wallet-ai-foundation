@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useCurrency } from "@/components/CurrencyProvider";
 import type { BudgetRecord } from "@/lib/budgets";
 import type { CategoryPoint } from "@/lib/analytics";
 
@@ -19,10 +20,11 @@ export function BudgetCard({
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [category, setCategory] = useState("");
-  const [limitAmount, setLimitAmount] = useState(0);
+  const [limitAmount, setLimitAmount] = useState<number | "">("");
   const [month, setMonth] = useState(() => new Date().toISOString().slice(0, 7));
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const { formatAmount } = useCurrency();
 
   const usageMap = useMemo(() => {
     const map = new Map<string, number>();
@@ -36,7 +38,7 @@ export function BudgetCard({
       setError("Category is required");
       return;
     }
-    if (!limitAmount || limitAmount <= 0) {
+    if (!limitAmount || Number(limitAmount) <= 0) {
       setError("Limit amount must be greater than zero");
       return;
     }
@@ -66,7 +68,7 @@ export function BudgetCard({
     setSaving(false);
     setOpen(false);
     setCategory("");
-    setLimitAmount(0);
+    setLimitAmount("");
     setMonth(new Date().toISOString().slice(0, 7));
     router.refresh();
   };
@@ -120,7 +122,7 @@ export function BudgetCard({
                   <div>
                     <p className="text-sm font-semibold text-foreground">{budget.category}</p>
                     <p className="text-xs text-muted-foreground">
-                      {monthLabel} · ${spent.toFixed(2)} / ${budget.limit_amount.toFixed(2)}
+                      {monthLabel} · {formatAmount(spent)} / {formatAmount(budget.limit_amount)}
                     </p>
                   </div>
                   <Button
@@ -135,11 +137,13 @@ export function BudgetCard({
                 <div className="mt-3 h-2 w-full rounded-full bg-muted">
                   <div
                     className={
-                      progress >= 90
+                      progress > 100
                         ? "h-2 rounded-full bg-destructive"
-                        : "h-2 rounded-full bg-primary"
+                        : progress >= 70
+                          ? "h-2 rounded-full bg-yellow-500"
+                          : "h-2 rounded-full bg-success"
                     }
-                    style={{ width: `${progress}%` }}
+                    style={{ width: `${Math.min(progress, 100)}%` }}
                   />
                 </div>
               </div>
@@ -186,7 +190,9 @@ export function BudgetCard({
                 min="0"
                 step="0.01"
                 value={limitAmount}
-                onChange={(event) => setLimitAmount(Number(event.target.value))}
+                onChange={(event) =>
+                  setLimitAmount(event.target.value === "" ? "" : Number(event.target.value))
+                }
               />
             </div>
             <div className="flex justify-end gap-2">

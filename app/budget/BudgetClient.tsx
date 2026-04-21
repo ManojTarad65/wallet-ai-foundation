@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useCurrency } from "@/components/CurrencyProvider";
 
 const currentMonth = new Date().toISOString().slice(0, 7);
 
@@ -29,8 +30,9 @@ export function BudgetClient() {
   const [error, setError] = useState<string | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<string>(currentMonth);
   const [category, setCategory] = useState("");
-  const [limitAmount, setLimitAmount] = useState(0);
+  const [limitAmount, setLimitAmount] = useState<number | "">("");
   const [month, setMonth] = useState(currentMonth);
+  const { formatAmount } = useCurrency();
 
   const loadBudgets = async (monthFilter: string) => {
     setIsLoading(true);
@@ -70,7 +72,7 @@ export function BudgetClient() {
       setError("Category is required.");
       return;
     }
-    if (!limitAmount || limitAmount <= 0) {
+    if (!limitAmount || Number(limitAmount) <= 0) {
       setError("Limit amount must be greater than zero.");
       return;
     }
@@ -98,7 +100,7 @@ export function BudgetClient() {
     }
 
     setCategory("");
-    setLimitAmount(0);
+    setLimitAmount("");
     setMonth(currentMonth);
     setSaving(false);
     loadBudgets(selectedMonth);
@@ -176,7 +178,7 @@ export function BudgetClient() {
                         <div>
                           <p className="text-sm font-semibold text-foreground">{budget.category}</p>
                           <p className="text-xs text-muted-foreground">
-                            Limit ${budget.limit_amount.toFixed(2)}
+                            Limit {formatAmount(budget.limit_amount)}
                           </p>
                         </div>
                         <Button
@@ -229,7 +231,9 @@ export function BudgetClient() {
                 min="0"
                 step="0.01"
                 value={limitAmount}
-                onChange={(event) => setLimitAmount(Number(event.target.value))}
+                onChange={(event) =>
+                  setLimitAmount(event.target.value === "" ? "" : Number(event.target.value))
+                }
               />
             </div>
             <Button className="w-full" onClick={handleSubmit} disabled={saving}>

@@ -1,4 +1,4 @@
-import type { TransactionRecord } from "@/lib/transactions";
+import type { TransactionRecord } from "@/lib/transactions/schema";
 
 export type Totals = {
   income: number;

@@ -1,8 +1,10 @@
 import { DollarSign, LayoutDashboard, TrendingDown, TrendingUp } from "lucide-react";
 import type { Metadata } from "next";
 import { ChartsSection } from "@/app/dashboard/ChartsSection";
+import { AiChat } from "@/components/AiChat";
 import { InsightsCard } from "@/app/dashboard/InsightsCard";
 import { BudgetCard } from "@/app/dashboard/BudgetCard";
+import { FinancialScoreCard } from "@/components/FinancialScoreCard";
 import {
   buildMonthlySummary,
   calculateTotals,
@@ -18,9 +20,7 @@ export const metadata: Metadata = {
   description: "Your financial overview at a glance.",
 };
 
-function formatCurrency(amount: number) {
-  return `$${amount.toFixed(2)}`;
-}
+import { FormattedAmount } from "@/components/FormattedAmount";
 
 export default async function DashboardPage() {
   const userId = await getAuthenticatedUserId();
@@ -46,12 +46,12 @@ export default async function DashboardPage() {
   const stats = [
     {
       label: "Total Balance",
-      value: formatCurrency(totals.balance),
+      value: totals.balance,
       icon: DollarSign,
       trend: "neutral",
     },
-    { label: "Income", value: formatCurrency(totals.income), icon: TrendingUp, trend: "up" },
-    { label: "Expenses", value: formatCurrency(totals.expense), icon: TrendingDown, trend: "down" },
+    { label: "Income", value: totals.income, icon: TrendingUp, trend: "up" },
+    { label: "Expenses", value: totals.expense, icon: TrendingDown, trend: "down" },
   ];
 
   return (
@@ -79,7 +79,9 @@ export default async function DashboardPage() {
                 }`}
               />
             </div>
-            <p className="mt-2 text-2xl font-bold text-foreground">{stat.value}</p>
+            <p className="mt-2 text-2xl font-bold text-foreground">
+              <FormattedAmount amount={stat.value} />
+            </p>
           </div>
         ))}
       </div>
@@ -91,9 +93,15 @@ export default async function DashboardPage() {
               {summary.monthLabel}
             </p>
             <div className="mt-3 space-y-1 text-sm">
-              <p className="text-success">Income: {formatCurrency(summary.income)}</p>
-              <p className="text-destructive">Expenses: {formatCurrency(summary.expense)}</p>
-              <p className="text-foreground">Net: {formatCurrency(summary.balance)}</p>
+              <p className="text-success">
+                Income: <FormattedAmount amount={summary.income} />
+              </p>
+              <p className="text-destructive">
+                Expenses: <FormattedAmount amount={summary.expense} />
+              </p>
+              <p className="text-foreground">
+                Net: <FormattedAmount amount={summary.balance} />
+              </p>
             </div>
           </div>
         ))}
@@ -102,6 +110,8 @@ export default async function DashboardPage() {
       <ChartsSection monthlyData={monthlyData} categoryData={categoryData} />
 
       <div className="grid gap-6 lg:grid-cols-2">
+        <FinancialScoreCard transactions={transactions} budgets={budgets} />
+        <AiChat />
         <InsightsCard />
         <BudgetCard budgets={budgets} expenseByCategory={currentMonthCategoryData} />
       </div>

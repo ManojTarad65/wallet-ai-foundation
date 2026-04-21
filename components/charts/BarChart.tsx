@@ -9,6 +9,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useCurrency } from "@/components/CurrencyProvider";
 
 export type MonthlyChartPoint = {
   month: string;
@@ -16,6 +17,7 @@ export type MonthlyChartPoint = {
 };
 
 export function BarChart({ data }: { data: MonthlyChartPoint[] }) {
+  const { formatAmount } = useCurrency();
   return (
     <div className="h-72 w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -23,7 +25,7 @@ export function BarChart({ data }: { data: MonthlyChartPoint[] }) {
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
           <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-          <Tooltip formatter={(value: number) => `$${value.toFixed(2)}`} />
+          <Tooltip formatter={(value: number) => formatAmount(value)} />
           <Bar dataKey="total" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
         </ReBarChart>
       </ResponsiveContainer>
